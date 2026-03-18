@@ -1,6 +1,6 @@
-# NX AI — FastAPI Proof of Concept
+# NX AI
 
-A clean, modular FastAPI backend designed as a production-ready proof of concept, demonstrating type-safe APIs and testable architecture.
+A clean, production-ready and modular FastAPI application for [NX](https://goldlabel.pro?s=nx-ai) AI services.
 
 ## Stack
 
@@ -9,6 +9,13 @@ A clean, modular FastAPI backend designed as a production-ready proof of concept
 - **Uvicorn** — ASGI server
 - **Pytest** — testing framework
 - **HTTPX / TestClient** — HTTP testing
+
+## Interactive API Docs
+
+FastAPI automatically generates interactive documentation:
+
+- Swagger UI: <http://localhost:8000/docs>
+- ReDoc: <http://localhost:8000/redoc>
 
 ## Project Structure
 
@@ -64,9 +71,4 @@ curl -X POST http://localhost:8000/echo \
 pytest
 ```
 
-## Interactive API Docs
 
-FastAPI automatically generates interactive documentation:
-
-- Swagger UI: <http://localhost:8000/docs>
-- ReDoc: <http://localhost:8000/redoc>

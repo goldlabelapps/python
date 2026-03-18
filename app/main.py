@@ -6,7 +6,7 @@ from app.api.routes import router
 
 app = FastAPI(
     title="NX AI",
-    description="A clean, modular FastAPI backend demonstrating Python expertise.",
+    description="A clean, modular FastAPI application for AI services.",
     version="1.0.0",
 )
 
