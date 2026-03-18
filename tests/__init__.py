@@ -1,0 +1,1 @@
+"""EchoApp test suite."""
