@@ -1,0 +1,17 @@
+# Exported from Render on 2026-03-18T18:57:52Z
+version: "1"
+projects:
+- name: NX AI Python
+  environments:
+  - name: Production
+    services:
+    - type: web
+      name: nx-ai
+      runtime: python
+      repo: https://github.com/goldlabelapps/nx-ai
+      plan: free
+      region: oregon
+      buildCommand: pip install -r requirements.txt
+      startCommand: uvicorn app.main:app --host 0.0.0.0 --port 8000
+      healthCheckPath: /health
+      autoDeployTrigger: checksPass
