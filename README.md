@@ -2,6 +2,8 @@
 
 A clean, production-ready and modular FastAPI application for [NX](https://goldlabel.pro?s=nx-ai) AI services.
 
+[Public RESTful API](https://nx-ai.onrender.com) 
+
 ## Stack
 
 - **Python 3.11+**
