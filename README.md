@@ -1,4 +1,4 @@
-# EchoApp — FastAPI Proof of Concept
+# NX AI — FastAPI Proof of Concept
 
 A clean, modular FastAPI backend designed as a production-ready proof of concept, demonstrating type-safe APIs and testable architecture.
 

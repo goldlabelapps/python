@@ -1,1 +1,1 @@
-"""EchoApp test suite."""
+"""NX AI test suite."""

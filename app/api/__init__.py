@@ -1,1 +1,1 @@
-"""EchoApp API package."""
+"""NX AI API package."""

@@ -1,1 +1,1 @@
-"""EchoApp - FastAPI portfolio application package."""
+"""NX AI - FastAPI portfolio application package."""

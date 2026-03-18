@@ -1,4 +1,4 @@
-"""Unit and integration tests for EchoApp routes."""
+"""Unit and integration tests for NX AI routes."""
 
 from fastapi.testclient import TestClient
 
@@ -11,7 +11,7 @@ def test_root_returns_welcome_message() -> None:
     """GET / should return a welcome message."""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Welcome to EchoApp!"}
+    assert response.json() == {"message": "Welcome to NX AI!"}
 
 
 def test_health_returns_ok() -> None:

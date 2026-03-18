@@ -1,4 +1,4 @@
-"""API route definitions for EchoApp."""
+"""API route definitions for NX AI."""
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -21,7 +21,7 @@ class EchoResponse(BaseModel):
 @router.get("/")
 def root() -> dict[str, str]:
     """Return a welcome message for the API root."""
-    return {"message": "Welcome to EchoApp!"}
+    return {"message": "Welcome to NX AI!"}
 
 
 @router.get("/health")
