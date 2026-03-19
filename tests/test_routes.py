@@ -1,7 +1,10 @@
 """Unit and integration tests for NX AI routes."""
 
+from unittest.mock import MagicMock
+
 from fastapi.testclient import TestClient
 
+from app.api.routes import get_db_connection
 from app.main import app
 
 client = TestClient(app)
@@ -11,7 +14,11 @@ def test_root_returns_welcome_message() -> None:
     """GET / should return a welcome message."""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Welcome to NX AI!"}
+    json_data = response.json()
+    assert "meta" in json_data
+    assert "data" in json_data
+    assert "message" in json_data["meta"]
+    assert "NX AI" in json_data["meta"]["message"]
 
 
 def test_health_returns_ok() -> None:

@@ -2,12 +2,13 @@
 
 from fastapi import FastAPI
 
+from app import __version__
 from app.api.routes import router
 
 app = FastAPI(
     title="NX AI",
-    description="A clean, modular FastAPI application for AI services.",
-    version="1.0.0",
+    description="Production-ready Python FastAPI app for NX",
+    version=__version__,
 )
 
 app.include_router(router)
