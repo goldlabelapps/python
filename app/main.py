@@ -1,3 +1,4 @@
+from app import __version__
 """NX AI - FastAPI entry point."""
 
 from fastapi import FastAPI

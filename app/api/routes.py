@@ -1,3 +1,4 @@
+from app import __version__
 """API route definitions for NX AI."""
 
 import os
@@ -5,41 +6,24 @@ import time
 
 import psycopg2
 from dotenv import load_dotenv
+
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 
-from app import __version__
-
-load_dotenv()
+from app.api.db import get_db_connection
+from app.api.schemas import EchoRequest, EchoResponse
 
 router = APIRouter()
 
+from app.api.root import router as root_router
+from app.api.health import router as health_router
+from app.api.echo import router as echo_router
 
-def get_db_connection():  # type: ignore[return]
-    """Create and yield a PostgreSQL connection for use as a FastAPI dependency."""
-    conn = psycopg2.connect(
-        host=os.getenv('DB_HOST'),
-        port=os.getenv('DB_PORT', '5432'),
-        dbname=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-    )
-    try:
-        yield conn
-    finally:
-        conn.close()
+router.include_router(root_router)
+router.include_router(health_router)
+router.include_router(echo_router)
 
 
-class EchoRequest(BaseModel):
-    """Request body for the echo endpoint."""
 
-    message: str
-
-
-class EchoResponse(BaseModel):
-    """Response body for the echo endpoint."""
-
-    echo: str
 
 
 @router.get("/")
