@@ -9,36 +9,20 @@ router = APIRouter()
 
 @router.get("/")
 def root() -> dict:
-    """Return a structured welcome message for the API root, including product data."""
+    """Return product data."""
     load_dotenv()
-    conn = psycopg2.connect(
-        host=os.getenv('DB_HOST'),
-        port=os.getenv('DB_PORT', '5432'),
-        dbname=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD')
-    )
-    cur = conn.cursor()
-    cur.execute('SELECT id, name, description, price, in_stock, created_at FROM product;')
-    products = [
-        {
-            "id": row[0],
-            "name": row[1],
-            "description": row[2],
-            "price": float(row[3]),
-            "in_stock": row[4],
-            "created_at": row[5].isoformat() if row[5] else None
-        }
-        for row in cur.fetchall()
-    ]
-    cur.close()
-    conn.close()
+    base_url = os.getenv("BASE_URL", "http://localhost:8000")
     epoch = int(time.time() * 1000)
     meta = {
         "version": __version__,
         "time": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
         "epoch": epoch,
         "severity": "success",
-        "message": f"NX AI says hello & returned {len(products)} products"
+        "message": f"NX AI says hello",
+        "base_url": base_url
     }
-    return {"meta": meta, "data": products}
+    endpoints = [
+        {"name": "health", "url": f"{base_url}/health"},
+        {"name": "products", "url": f"{base_url}/products"}
+    ]
+    return {"meta": meta, "data": endpoints}
