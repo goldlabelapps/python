@@ -39,11 +39,11 @@ def root() -> dict:
 
     epoch = int(time.time() * 1000)
     meta = {
+        "title": "Product List",
+        "description": "from the products Postgres table",
         "version": __version__,
         "base_url": base_url,
-        "time": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
-        "epoch": epoch,
+        "time": epoch,
         "severity": "success",
-        "message": f"{len(products)} products"
     }
     return {"meta": meta, "data": products}

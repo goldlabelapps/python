@@ -13,12 +13,12 @@ def root() -> dict:
     base_url = os.getenv("BASE_URL", "http://localhost:8000")
     epoch = int(time.time() * 1000)
     meta = {
-        "base_url": base_url,
+        "title": "NX-AI says hi",
+        "description": "This is the base_url",
         "version": __version__,
-        "time": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
-        "epoch": epoch,
+        "base_url": base_url,
+        "time": epoch,
         "severity": "success",
-        "message": f"NX AI says hello",
     }
     endpoints = [
         {"docs": "docs", "url": f"{base_url}/docs"},
