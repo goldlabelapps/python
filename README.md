@@ -3,9 +3,9 @@
 > FastAPI/Python/Postgres/tsvector. 
 Open Source, production ready Python FastAPI/Postgres app for [NX](https://goldlabel.pro?s=python-nx-ai)
 
-#### Use
-
-`uvicorn app.main:app`
+```sh
+uvicorn app.main:app  --reload
+```
 
 #### Install
 
