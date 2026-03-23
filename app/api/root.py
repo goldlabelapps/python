@@ -14,7 +14,7 @@ def root() -> dict:
     epoch = int(time.time() * 1000)
     meta = {
         "severity": "success",
-        "title": "NX-AI says hi",
+        "title": "How can NX-AI help?",
         "version": __version__,
         "base_url": base_url,
         "time": epoch,
@@ -22,6 +22,12 @@ def root() -> dict:
     endpoints = [
         {"name": "docs", "url": f"{base_url}/docs"},
         {"name": "health", "url": f"{base_url}/health"},
-        {"name": "products", "url": f"{base_url}/products"}
+        {
+            "name": "products",
+            "url": f"{base_url}/products",
+            "children": [
+                {"name": "seed", "url": f"{base_url}/products/seed"}
+            ]
+        }
     ]
     return {"meta": meta, "data": endpoints}

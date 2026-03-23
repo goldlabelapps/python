@@ -6,8 +6,7 @@ from app.api.db import get_db_connection
 
 router = APIRouter()
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), 'start_data.csv')
-CSV_PATH = os.path.abspath(CSV_PATH)
+CSV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/seed.csv'))
 
 @router.get("/products/seed", status_code=status.HTTP_200_OK)
 def seed_products() -> dict:
@@ -61,6 +60,20 @@ def seed_products() -> dict:
                 """,
                 row
             )
+    # Add tsvector column for full-text search
+    cur.execute('''
+        ALTER TABLE product
+        ADD COLUMN IF NOT EXISTS search_vector tsvector;
+    ''')
+    # Populate tsvector column (example: combine title, Pack_Description, Hierarchy1-3)
+    cur.execute('''
+        UPDATE product SET search_vector =
+            to_tsvector('english', coalesce(title,'') || ' ' || coalesce(Pack_Description,'') || ' ' || coalesce(Hierarchy1,'') || ' ' || coalesce(Hierarchy2,'') || ' ' || coalesce(Hierarchy3,''));
+    ''')
+    # Create GIN index for fast search
+    cur.execute('''
+        CREATE INDEX IF NOT EXISTS idx_product_search_vector ON product USING GIN(search_vector);
+    ''')
     conn.commit()
     cur.execute('SELECT * FROM product;')
     if cur.description is None:

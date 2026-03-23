@@ -1,6 +1,4 @@
 from app import __version__
-"""NX-AI Open Source, production ready Python FastAPI/Postgres app for NX"""
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
