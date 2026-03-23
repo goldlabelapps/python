@@ -26,7 +26,8 @@ def root() -> dict:
             "name": "products",
             "url": f"{base_url}/products",
             "children": [
-                {"name": "seed", "url": f"{base_url}/products/seed"}
+                {"name": "seed", "url": f"{base_url}/products/seed"},
+                {"name": "update", "url": f"{base_url}/products/update"}
             ]
         }
     ]
