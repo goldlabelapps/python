@@ -13,8 +13,8 @@ def root() -> dict:
     base_url = os.getenv("BASE_URL", "http://localhost:8000")
     epoch = int(time.time() * 1000)
     meta = {
+        "title": "How can I help?",
         "severity": "success",
-        "title": "How can NX-AI help?",
         "version": __version__,
         "base_url": base_url,
         "time": epoch,
