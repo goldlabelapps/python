@@ -1,2 +1,2 @@
-from .products import router
-from .reset import router as reset_router
+from .products import router as products_router
+from .seed import router as seed_router
