@@ -1,5 +1,6 @@
 
 from app import __version__
+from app.utils.make_meta import make_meta
 from fastapi import APIRouter
 import os, time
 from app.api.db import get_db_connection
@@ -21,13 +22,5 @@ def root() -> dict:
     cur.close()
     conn.close()
 
-    base_url = os.getenv("BASE_URL", "http://localhost:8000")
-    epoch = int(time.time() * 1000)
-    meta = {
-        "severity": "success",
-        "title": "Product List",
-        "version": __version__,
-        "base_url": base_url,
-        "time": epoch,
-    }
+    meta = make_meta("success", "Product List")
     return {"meta": meta, "data": products}
