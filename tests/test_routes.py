@@ -24,8 +24,8 @@ def test_health_returns_ok() -> None:
 
 
 def test_products_returns_list() -> None:
-    """GET /products should return a list of products (possibly empty)."""
-    response = client.get("/products")
+    """GET /prospects should return a list of prospects (possibly empty)."""
+    response = client.get("/prospects")
     assert response.status_code == 200
     json_data = response.json()
     assert "meta" in json_data

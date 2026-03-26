@@ -1,1 +1,1 @@
-"""NX AI API package."""
+"""NX AI Python package"""
