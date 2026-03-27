@@ -1,19 +1,65 @@
+
 from app import __version__
 import os
 from app.utils.make_meta import make_meta
-from fastapi import APIRouter
+from fastapi import APIRouter, Query, Path
 from app.utils.db import get_db_connection
 
 router = APIRouter()
-    
 base_url = os.getenv("BASE_URL", "http://localhost:8000")
 
 @router.get("/prospects")
 def root() -> dict:
     """GET /prospects endpoint."""
-    meta = make_meta("success", "Prospects placeholder")
-    data = {"init": f"{base_url}/prospects/init"}
+    meta = make_meta("success", "Prospects start")
+    data = [
+        {"init": f"{base_url}/prospects/init"},
+        {"single": f"{base_url}/prospects/101"},
+        {"read": f"{base_url}/prospects/read"},
+    ]
     return {"meta": meta, "data": data}
+
+
+# endpoint: /prospects/read
+@router.get("/prospects/read")
+def prospects_read(
+    page: int = Query(1, ge=1, description="Page number (1-based)"),
+    limit: int = Query(50, ge=1, le=500, description="Records per page (default 50, max 500)")
+) -> dict:
+    """Read and return paginated rows from the prospects table."""
+    meta = make_meta("success", "Read paginated prospects")
+    conn_gen = get_db_connection()
+    conn = next(conn_gen)
+    cur = conn.cursor()
+    offset = (page - 1) * limit
+    try:
+        cur.execute('SELECT COUNT(*) FROM prospects;')
+        count_row = cur.fetchone() if cur.description is not None else None
+        total = count_row[0] if count_row is not None else 0
+        cur.execute(f'SELECT * FROM prospects OFFSET %s LIMIT %s;', (offset, limit))
+        if cur.description is not None:
+            columns = [desc[0] for desc in cur.description]
+            rows = cur.fetchall()
+            data = [dict(zip(columns, row)) for row in rows]
+        else:
+            data = []
+    except Exception as e:
+        data = []
+        total = 0
+        meta = make_meta("error", f"Failed to read prospects: {str(e)}")
+    finally:
+        cur.close()
+        conn.close()
+    return {
+        "meta": meta,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "pages": (total // limit) + (1 if total % limit else 0)
+        },
+        "data": data,
+    }
 
 # endpoint: /prospects/init
 @router.get("/prospects/init")
@@ -97,4 +143,34 @@ def prospects_init() -> dict:
             }
         },
     }
+    return {"meta": meta, "data": data}
+
+
+# endpoint: /prospects/{id}
+@router.get("/prospects/{id}")
+def prospects_read_one(id: int = Path(..., description="ID of the prospect to retrieve")) -> dict:
+    """Read and return a single prospect document by id."""
+    meta = make_meta("success", f"Read prospect with id {id}")
+    conn_gen = get_db_connection()
+    conn = next(conn_gen)
+    cur = conn.cursor()
+    try:
+        cur.execute('SELECT * FROM prospects WHERE id = %s;', (id,))
+        if cur.description is not None:
+            row = cur.fetchone()
+            if row is not None:
+                columns = [desc[0] for desc in cur.description]
+                data = dict(zip(columns, row))
+            else:
+                data = None
+                meta = make_meta("error", f"No prospect found with id {id}")
+        else:
+            data = None
+            meta = make_meta("error", f"No prospect found with id {id}")
+    except Exception as e:
+        data = None
+        meta = make_meta("error", f"Failed to read prospect: {str(e)}")
+    finally:
+        cur.close()
+        conn.close()
     return {"meta": meta, "data": data}

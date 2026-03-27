@@ -10,6 +10,6 @@ def make_meta(severity: str, title: str) -> dict:
         "severity": severity,
         "title": title,
         "version": __version__,
-        "base_url": base_url,
+        "endpoint": f"{base_url}/prospects",
         "time": epoch,
     }
