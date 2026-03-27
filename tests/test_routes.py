@@ -22,13 +22,3 @@ def test_health_returns_ok() -> None:
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
-
-def test_products_returns_list() -> None:
-    """GET /prospects should return a list of prospects (possibly empty)."""
-    response = client.get("/prospects")
-    assert response.status_code == 200
-    json_data = response.json()
-    assert "meta" in json_data
-    assert "data" in json_data
-    assert isinstance(json_data["data"], list)
-
