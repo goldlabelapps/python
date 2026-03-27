@@ -29,19 +29,36 @@ def seed_prospects() -> dict:
     import io
     reader = csv.reader(io.StringIO(csv_data))
     columns_raw = next(reader)
-    columns = [normalize_column(col) for col in columns_raw]
+    # Remove 'Secondary Email' column and its variants
+    remove_cols = {'secondary_email', 'secondary_email_source', 'secondary_email_status', 'secondary_email_verification_source'}
+    columns = [normalize_column(col) for col in columns_raw if normalize_column(col) not in remove_cols]
+    col_indices = [i for i, col in enumerate([normalize_column(col) for col in columns_raw]) if col not in remove_cols]
 
-    # Drop and recreate table
+
+    # Drop and recreate table with tsvector column
     cur.execute('DROP TABLE IF EXISTS prospects;')
     create_cols = ',\n    '.join([f'{col} TEXT' for col in columns])
-    cur.execute(f'''CREATE TABLE prospects (\n    id SERIAL PRIMARY KEY,\n    {create_cols}\n);''')
+    cur.execute(f'''
+        CREATE TABLE prospects (
+            id SERIAL PRIMARY KEY,
+            {create_cols},
+            search_vector tsvector
+        );
+    ''')
+    # Create GIN index for full-text search
+    cur.execute('CREATE INDEX IF NOT EXISTS idx_prospects_search_vector ON prospects USING GIN (search_vector);')
 
-    # Insert rows
+
+    # Insert rows with tsvector
     for row in reader:
+        # Only keep values for columns we want
+        filtered_row = [row[i] for i in col_indices]
         placeholders = ', '.join(['%s'] * len(columns))
+        # Concatenate all text fields for tsvector
+        text_content = ' '.join([str(val) for val in filtered_row if val is not None])
         cur.execute(
-            f"INSERT INTO prospects ({', '.join(columns)}) VALUES ({placeholders})",
-            row
+            f"INSERT INTO prospects ({', '.join(columns)}, search_vector) VALUES ({placeholders}, to_tsvector('english', %s))",
+            filtered_row + [text_content]
         )
 
     conn.commit()

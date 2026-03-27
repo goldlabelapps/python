@@ -26,7 +26,20 @@ The API is at <http://localhost:8000>.
 
 - **Python 3.11+**
 - **Postgres**
-- **tsvector** - Superfast search
+- **tsvector** - Superfast full-text search (with GIN index)
+### Full-Text Search (tsvector)
+
+The prospects table includes a `search_vector` column (type: tsvector) that is automatically computed from all text fields on insert. A GIN index is created for this column, enabling fast and scalable full-text search queries.
+
+**How it works:**
+- On every insert (via `/prospects/seed` or `/prospects/process`), the `search_vector` is computed from all text columns using PostgreSQL's `to_tsvector('english', ...)`.
+- The GIN index (`idx_prospects_search_vector`) allows efficient search queries like:
+
+```sql
+SELECT * FROM prospects WHERE search_vector @@ plainto_tsquery('english', 'search terms');
+```
+
+This makes searching across all text fields in the prospects table extremely fast, even for large datasets.
 - **FastAPI** — RESTful API framework
 - **Uvicorn** — ASGI server
 - **Pytest** — testing framework
@@ -60,5 +73,24 @@ requirements.txt
 | GET    | `/`       | Welcome message                 |
 | GET    | `/health` | Health check — returns `ok`     |
 | POST   | `/echo`   | Echoes the JSON `message` field |
+| GET    | `/prospects/seed` | (Re)create prospects table and seed with sample data |
+| DELETE | `/prospects/process` | (Legacy) Empties the prospects table |
+| GET    | `/prospects/process` | Process and insert all records from big.csv into prospects table |
+
+### Processing Large CSV Files
+
+The `/prospects/process` endpoint is designed for robust, scalable ingestion of large CSV files (e.g., 1300+ rows, 300KB+). It follows the same normalization and insertion pattern as `/prospects/seed`, but is optimized for large files:
+
+
+#### Example usage
+
+1. Seed the table structure:
+  - `GET /prospects/seed`
+2. (Optional) Empty the table:
+  - `DELETE /prospects/empty`
+3. Process the large CSV:
+  - `GET /prospects/process`
+
+The endpoint will return the number of records inserted. This is the core ingestion workflow for production-scale data.
 
 
