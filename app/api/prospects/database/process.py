@@ -4,7 +4,7 @@ from app.utils.db import get_db_connection
 
 router = APIRouter()
 
-CSV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/big.csv'))
+CSV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'big.csv'))
 
 
 import csv
@@ -18,7 +18,7 @@ def normalize_column(col):
         col = '_' + col
     return col
 
-@router.get("/prospects/process", status_code=status.HTTP_200_OK)
+@router.put("/prospects/process", status_code=status.HTTP_200_OK)
 def process_prospects() -> dict:
     """
     Process and insert data from the large CSV file (big.csv) into the prospects table.
