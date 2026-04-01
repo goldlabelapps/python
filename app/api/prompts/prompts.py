@@ -1,4 +1,4 @@
-
+from fastapi import HTTPException
 from app import __version__
 
 import os
@@ -34,20 +34,23 @@ def root() -> dict:
         conn.close()
     if not exists:
         meta = make_meta("warning", "Table 'prompts' does not exist.")
-        # Do not include 'kata' key or any other keys in data
-        response = {"meta": meta}
+        return {"meta": meta}
     else:
-        meta = make_meta("success", "Prompts endpoint")
-        # Example: include 'kata' key only if table exists (add as needed)
-        data = [
-            {"init": f"{base_url}/prompts", "kata": "example"},
-        ]
-        response = {"meta": meta, "data": data}
-    # Remove 'kata' key from all items in data if table does not exist
-    if not exists:
-        for item in data:
-            item.pop('kata', None)
-    return response
+        meta = make_meta("success", "Prompts")
+        # Fetch all records from prompts table
+        data = []
+        conn = get_db_connection_direct()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT id, prompt, response, duration_ms, llm, timestamp FROM prompts ORDER BY id DESC;")
+                rows = cur.fetchall()
+                keys = ["id", "prompt", "response", "duration_ms", "llm", "timestamp"]
+                for row in rows:
+                    data.append(dict(zip(keys, row)))
+        finally:
+            conn.close()
+        return {"meta": meta, "data": data}
+    
 
 
 # POST /prompts endpoint
@@ -84,3 +87,25 @@ def create_prompt(prompt_in: PromptCreate = Body(...)):
         keys = ["id", "prompt", "response", "duration_ms", "llm", "timestamp"]
         return dict(zip(keys, row))
     return {"error": "Failed to insert prompt."}
+
+
+# DELETE /prompts/{id} endpoint
+@router.delete("/prompts/{id}", status_code=status.HTTP_200_OK)
+def delete_prompt(id: int):
+    """Delete a prompt record by id from the prompts table."""
+    from app.utils.db import get_db_connection_direct
+    import psycopg2
+    conn = get_db_connection_direct()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM prompts WHERE id = %s RETURNING id;", (id,))
+            row = cur.fetchone()
+            conn.commit()
+    except psycopg2.Error as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+    if row:
+        return {"success": True, "deleted_id": row[0]}
+    raise HTTPException(status_code=404, detail=f"Prompt with id {id} not found.")
