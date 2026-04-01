@@ -1,10 +1,10 @@
 # ![NX AI](/app/static/repoicon.png) <NEW> NX AI
 
-> Python with FastAPI using Postgres & tsvector. Open Source, production ready Python FastAPI/Postgres app. [GitHub](https://github.com/goldlabelapps/python-nx-ai) | [NX-AI onrender](https://nx-ai.onrender.com)
-
 > Python with FastAPI using Postgres & tsvector. 
 
-Open Source, production ready Python FastAPI/Postgres app for [NX](https://goldlabel.pro?s=python)
+Open Source, production ready Python FastAPI/Postgres app. [GitHub](https://github.com/goldlabelapps/python-nx-ai) | [NX-AI onrender](https://nx-ai.onrender.com)
+
+[Goldlabel](https://goldlabel.pro?s=python)
 
 ```sh
 uvicorn app.main:app  --reload
@@ -23,13 +23,12 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-The API is at <http://localhost:8000>.
-
-[localhost](http://localhost:8000) | [Public RESTful API](https://nx-ai.onrender.com) 
+[localhost](http://localhost:8000) | [onrender](https://nx-ai.onrender.com) 
 
 - **Python 3.11+**
 - **Postgres**
 - **tsvector** - Superfast full-text search (with GIN index)
+
 ### Full-Text Search (tsvector)
 
 The prospects table includes a `search_vector` column (type: tsvector) that is automatically computed from all text fields on insert. A GIN index is created for this column, enabling fast and scalable full-text search queries.
