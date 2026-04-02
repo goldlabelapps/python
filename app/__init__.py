@@ -1,4 +1,4 @@
-"""NX AI - FastAPI, Python, Postgres, tsvector"""
+"""Python - FastAPI, Postgres, tsvector"""
 
 # Current Version
-__version__ = "2.0.5"
+__version__ = "2.0.6"
