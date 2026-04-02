@@ -2,7 +2,7 @@
 from app import __version__
 import os
 from app.utils.make_meta import make_meta
-from fastapi import APIRouter, Query, Path
+from fastapi import APIRouter, Query, Path, Body, HTTPException
 from app.utils.db import get_db_connection
 
 router = APIRouter()
@@ -60,6 +60,13 @@ def prospects_read(
     }
 
 from typing import Optional
+
+# Schema for update
+from pydantic import BaseModel
+
+class ProspectUpdate(BaseModel):
+    flag: Optional[bool] = None
+    hide: Optional[bool] = None
 
 # endpoint: /prospects/search
 @router.get("/prospects/search")
@@ -195,6 +202,7 @@ def prospects_init() -> dict:
 
 
 # endpoint: /prospects/{id}
+# endpoint: /prospects/{id}
 @router.get("/prospects/{id}")
 def prospects_read_one(id: int = Path(..., description="ID of the prospect to retrieve")) -> dict:
     """Read and return a single prospect document by id."""
@@ -218,6 +226,48 @@ def prospects_read_one(id: int = Path(..., description="ID of the prospect to re
     except Exception as e:
         data = None
         meta = make_meta("error", f"Failed to read prospect: {str(e)}")
+    finally:
+        cur.close()
+        conn.close()
+    return {"meta": meta, "data": data}
+
+
+# PATCH endpoint to update flag/hide
+@router.patch("/prospects/{id}")
+def update_prospect(id: int = Path(..., description="ID of the prospect to update"), update: ProspectUpdate = Body(...)) -> dict:
+    """Update flag and/or hide fields for a prospect by id."""
+    meta = make_meta("success", f"Updated prospect with id {id}")
+    conn_gen = get_db_connection()
+    conn = next(conn_gen)
+    cur = conn.cursor()
+    fields = []
+    values = []
+    if update.flag is not None:
+        fields.append("flag = %s")
+        values.append(update.flag)
+    if update.hide is not None:
+        fields.append("hide = %s")
+        values.append(update.hide)
+    if not fields:
+        raise HTTPException(status_code=400, detail="No fields to update.")
+    values.append(id)
+    try:
+        cur.execute(f"UPDATE prospects SET {', '.join(fields)} WHERE id = %s RETURNING *;", tuple(values))
+        if cur.description is not None:
+            row = cur.fetchone()
+            if row is not None:
+                columns = [desc[0] for desc in cur.description]
+                data = dict(zip(columns, row))
+            else:
+                data = None
+                meta = make_meta("error", f"No prospect found with id {id}")
+        else:
+            data = None
+            meta = make_meta("error", f"No prospect found with id {id}")
+        conn.commit()
+    except Exception as e:
+        data = None
+        meta = make_meta("error", f"Failed to update prospect: {str(e)}")
     finally:
         cur.close()
         conn.close()
