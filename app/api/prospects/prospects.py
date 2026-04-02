@@ -24,17 +24,17 @@ def prospects_read(
     page: int = Query(1, ge=1, description="Page number (1-based)"),
     limit: int = Query(50, ge=1, le=500, description="Records per page (default 50, max 500)")
 ) -> dict:
-    """Read and return paginated rows from the prospects table."""
+    """Read and return paginated rows from the prospects table, excluding hidden."""
     meta = make_meta("success", "Read paginated prospects")
     conn_gen = get_db_connection()
     conn = next(conn_gen)
     cur = conn.cursor()
     offset = (page - 1) * limit
     try:
-        cur.execute('SELECT COUNT(*) FROM prospects;')
+        cur.execute('SELECT COUNT(*) FROM prospects WHERE hide IS NOT TRUE;')
         count_row = cur.fetchone() if cur.description is not None else None
         total = count_row[0] if count_row is not None else 0
-        cur.execute(f'SELECT * FROM prospects OFFSET %s LIMIT %s;', (offset, limit))
+        cur.execute(f'SELECT * FROM prospects WHERE hide IS NOT TRUE OFFSET %s LIMIT %s;', (offset, limit))
         if cur.description is not None:
             columns = [desc[0] for desc in cur.description]
             rows = cur.fetchall()
@@ -59,61 +59,16 @@ def prospects_read(
         "data": data,
     }
 
-from typing import Optional
+
 
 # Schema for update
 from pydantic import BaseModel
+from typing import Optional
 
 class ProspectUpdate(BaseModel):
     flag: Optional[bool] = None
     hide: Optional[bool] = None
 
-# endpoint: /prospects/search
-@router.get("/prospects/search")
-def prospects_search(query: Optional[str] = Query(None, description="Search query string"),
-                    page: int = Query(1, ge=1, description="Page number (1-based)"),
-                    limit: int = Query(50, ge=1, le=500, description="Records per page (default 50, max 500)")) -> dict:
-    """Search prospects using full-text search on search_vector column."""
-    meta = make_meta("success", f"Search prospects for query: {query}")
-    data = []
-    total = 0
-    if not query or not query.strip():
-        meta = make_meta("error", "Query parameter is required for search.")
-        return {"meta": meta, "data": [], "pagination": {"page": page, "limit": limit, "total": 0, "pages": 0}}
-    conn_gen = get_db_connection()
-    conn = next(conn_gen)
-    cur = conn.cursor()
-    offset = (page - 1) * limit
-    try:
-        # Count total matches
-        cur.execute("SELECT COUNT(*) FROM prospects WHERE search_vector @@ plainto_tsquery('english', %s);", (query,))
-        count_row = cur.fetchone() if cur.description is not None else None
-        total = count_row[0] if count_row is not None else 0
-        # Fetch paginated results
-        cur.execute("SELECT * FROM prospects WHERE search_vector @@ plainto_tsquery('english', %s) OFFSET %s LIMIT %s;", (query, offset, limit))
-        if cur.description is not None:
-            columns = [desc[0] for desc in cur.description]
-            rows = cur.fetchall()
-            data = [dict(zip(columns, row)) for row in rows]
-        else:
-            data = []
-    except Exception as e:
-        meta = make_meta("error", f"Search failed: {str(e)}")
-        data = []
-        total = 0
-    finally:
-        cur.close()
-        conn.close()
-    return {
-        "meta": meta,
-        "pagination": {
-            "page": page,
-            "limit": limit,
-            "total": total,
-            "pages": (total // limit) + (1 if total % limit else 0)
-        },
-        "data": data,
-    }
 
 # endpoint: /prospects/init
 @router.get("/prospects/init")
@@ -130,12 +85,12 @@ def prospects_init() -> dict:
     sub_departments = []
     total_unique_sub_departments = 0
     try:
-        cur.execute('SELECT COUNT(*) FROM prospects;')
+        cur.execute('SELECT COUNT(*) FROM prospects WHERE hide IS NOT TRUE;')
         row = cur.fetchone()
         total = row[0] if row is not None else 0
 
         # Get unique titles and their counts (column is 'title')
-        cur.execute('SELECT title, COUNT(*) FROM prospects WHERE title IS NOT NULL GROUP BY title ORDER BY COUNT(*) DESC;')
+        cur.execute('SELECT title, COUNT(*) FROM prospects WHERE title IS NOT NULL AND hide IS NOT TRUE GROUP BY title ORDER BY COUNT(*) DESC;')
         title_rows = cur.fetchall()
         def slugify(text):
             import re
@@ -151,7 +106,7 @@ def prospects_init() -> dict:
         total_unique_title = len(title)
 
         # Get unique seniority and their counts (column is 'seniority')
-        cur.execute('SELECT seniority, COUNT(*) FROM prospects WHERE seniority IS NOT NULL GROUP BY seniority ORDER BY COUNT(*) DESC;')
+        cur.execute('SELECT seniority, COUNT(*) FROM prospects WHERE seniority IS NOT NULL AND hide IS NOT TRUE GROUP BY seniority ORDER BY COUNT(*) DESC;')
         seniority_rows = cur.fetchall()
         seniority = [
             {"label": str(s[0]), "value": slugify(s[0])}
@@ -161,7 +116,7 @@ def prospects_init() -> dict:
         total_unique_seniority = len(seniority)
 
         # Get unique sub_departments and their counts (column is 'sub_departments')
-        cur.execute('SELECT sub_departments, COUNT(*) FROM prospects WHERE sub_departments IS NOT NULL GROUP BY sub_departments ORDER BY COUNT(*) DESC;')
+        cur.execute('SELECT sub_departments, COUNT(*) FROM prospects WHERE sub_departments IS NOT NULL AND hide IS NOT TRUE GROUP BY sub_departments ORDER BY COUNT(*) DESC;')
         sub_department_rows = cur.fetchall()
         sub_departments = [
             {"label": str(sd[0]), "value": slugify(sd[0])}
@@ -205,13 +160,13 @@ def prospects_init() -> dict:
 # endpoint: /prospects/{id}
 @router.get("/prospects/{id}")
 def prospects_read_one(id: int = Path(..., description="ID of the prospect to retrieve")) -> dict:
-    """Read and return a single prospect document by id."""
+    """Read and return a single prospect document by id, unless hidden."""
     meta = make_meta("success", f"Read prospect with id {id}")
     conn_gen = get_db_connection()
     conn = next(conn_gen)
     cur = conn.cursor()
     try:
-        cur.execute('SELECT * FROM prospects WHERE id = %s;', (id,))
+        cur.execute('SELECT * FROM prospects WHERE id = %s AND hide IS NOT TRUE;', (id,))
         if cur.description is not None:
             row = cur.fetchone()
             if row is not None:
