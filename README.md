@@ -1,8 +1,11 @@
-## ![NX AI](/app/static/repoicon.png) <NEW> NX AI
+## ![Python](/app/static/repoicon.png) Python
 
 > Python with FastAPI using Postgres & tsvector. 
 
-Open Source, production ready Python FastAPI/Postgres app. [GitHub](https://github.com/goldlabelapps/python-nx-ai) | [NX-AI onrender](https://nx-ai.onrender.com) | [Goldlabel](https://goldlabel.pro?s=python)
+Open Source, production ready Python FastAPI/Postgres app. 
+[GitHub](https://github.com/goldlabelapps/python) | 
+[onrender](https://nx-ai.onrender.com) | 
+[by Goldlabel](https://goldlabel.pro)
 
 - **Python 3.11+**
 - **Postgres**
