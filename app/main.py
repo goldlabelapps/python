@@ -8,7 +8,7 @@ from app.api.routes import router
 
 app = FastAPI(
     title="Python",
-    description="FastAPI, Python, Postgres, tsvector",
+    description="FastAPI, Postgres, tsvector",
     version=__version__,
 )
 
