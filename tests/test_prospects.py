@@ -17,4 +17,12 @@ def test_get_prospects_root():
     # Meta checks
     meta = data["meta"]
     assert meta["severity"] == "success"
-    assert meta["message"] == "Prospects endpoint"
+    assert meta["title"] == "Prospects endpoint"
+
+def test_prospects_returns_list():
+    response = client.get("/prospects")
+    assert response.status_code == 200
+    data = response.json()
+    assert "meta" in data
+    assert "data" in data
+    assert isinstance(data["data"], list) or isinstance(data["data"], dict)
