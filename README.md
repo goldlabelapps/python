@@ -9,7 +9,7 @@
 This project provides a scalable API backend using FastAPI and PostgreSQL, featuring:
 
 - Automatic full-text search on all text fields (via tsvector)
-- Endpoints for health checks, product management, prompt handling (via `/prompt`), resend email, and prospect management
+- Endpoints for health checks, product management, prompt handling (via `/prompt`), notify email, and prospect management
 - Efficient ingestion and processing of large CSV files
 
 #### Features
@@ -54,7 +54,7 @@ FastAPI auto-generates interactive docs:
 - `GET /health` — Health check
 - `GET /prompt` or `GET /prompts` — Prompt table metadata (`record_count`, `columns`)
 - `POST /prompt` — LLM prompt completion (formerly `/llm`)
-- `GET/POST /resend` — Send email via Resend API (see implementation in `app/utils/notify/resend.py`)
+- `GET/POST /notify/email` — Send email via Resend API (see implementation in `app/api/notify/email.py`)
 - `GET /prospects` — Paginated prospects
 - `POST /prospects/process` — Bulk CSV ingestion
 
