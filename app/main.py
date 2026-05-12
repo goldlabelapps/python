@@ -20,6 +20,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:1999", 
+        "http://localhost:1998", 
+        "http://localhost:1975", 
         "http://localhost:1980", 
         "http://localhost:2027",
         "http://localhost:2020",
