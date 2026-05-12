@@ -78,19 +78,21 @@ def goldlabel_email(
           <tr>
             <td class="email-header" align="center"
                 style="padding:24px 40px 0 40px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-header-inner"
-                     style="background-color:{_SECONDARY_BG}; border-radius:6px; max-width:300px; margin:0 auto;">
+              <table role="presentation" cellpadding="0" cellspacing="0" class="email-header-inner"
+                     style="background-color:{_SECONDARY_BG}; border-radius:6px; margin:0 auto; display:table;">
                 <tr>
-                  <td align="center" valign="middle" style="padding:20px;">
-                    <a href="{_BASE_URL}" style="text-decoration:none; display:inline-block;">
+                  <td align="center" valign="middle" style="padding:20px 16px; white-space:nowrap;">
+                    <a href="{_BASE_URL}" style="text-decoration:none; display:inline-block; vertical-align:middle;">
                       <img src="{_LOGO_URL}"
-                           width="48" height="48"
+                           width="32" height="32"
                            alt="Virus°"
-                           style="width:48px; height:48px; border-radius:6px; display:block; margin:0 auto 10px auto;" />
+                           style="width:32px; height:32px; border-radius:4px; display:inline-block; vertical-align:middle;" />
                     </a>
+                  </td>
+                  <td align="center" valign="middle" style="padding:20px 16px 20px 0;">
                     <h1 class="email-subject"
-                        style="margin:0; font-size:22px; font-weight:700;
-                               color:{_DARK_TEXT}; line-height:1.3;">
+                        style="margin:0; font-size:22px; font-weight:400;
+                               color:{_DARK_TEXT}; line-height:1.3; display:inline-block; vertical-align:middle;">
                       {subject}
                     </h1>
                   </td>
