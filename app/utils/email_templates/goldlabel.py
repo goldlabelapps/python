@@ -1,16 +1,15 @@
 """Goldlabel branded HTML email template."""
 
-_LOGO_URL = "https://goldlabel.pro/goldlabelpro/png/favicon.png"
-_BASE_URL = "https://goldlabel.pro"
+_LOGO_URL = "https://goldlabel.pro/shared/png/virus/virus.png"
+_BASE_URL = "https://goldlabel.pro/virus"
 
-# Palette (dark theme used for the email chrome; body text stays readable on white clients)
-_DARK_BG      = "#364450"
-_DARK_PAPER   = "#364450"
-_DARK_PRIMARY = "#ffd849"
-_DARK_TEXT    = "#ffffff"
+# Palette (light theme only - light backgrounds with dark text)
+_LIGHT_BG     = "#ffffff"
 _LIGHT_PAPER  = "#ffffff"
-_LIGHT_TEXT   = "#000000"
-_LIGHT_PRIMARY = "#364450"
+_ACCENT_COLOR = "#ffd849"
+_DARK_TEXT    = "#000000"
+_LIGHT_TEXT   = "#666666"
+_SECONDARY_BG = "#FFFFFF"
 
 
 def goldlabel_email(
@@ -47,21 +46,19 @@ def goldlabel_email(
     /* ── Base ──────────────────────────────────────── */
     body {{
       margin: 0; padding: 0;
-      background-color: #ffffff;
+      background-color: {_LIGHT_BG};
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: {_LIGHT_TEXT};
+      color: {_DARK_TEXT};
     }}
 
-    /* ── Dark-mode overrides ───────────────────────── */
-    @media (prefers-color-scheme: dark) {{
-      body, .email-wrapper {{ background-color: #ffffff !important; color: {_DARK_TEXT} !important; }}
-      .email-card         {{ background-color: {_DARK_PAPER} !important; color: {_DARK_TEXT} !important; }}
-      .email-header-inner {{ background-color: {_DARK_BG} !important; }}
-      .email-footer       {{ background-color: {_DARK_BG} !important; color: {_DARK_TEXT} !important; }}
-      .email-subject      {{ color: {_DARK_PRIMARY} !important; }}
-      .email-cta          {{ background-color: {_DARK_PRIMARY} !important; color: {_LIGHT_PRIMARY} !important; }}
-      a                   {{ color: {_DARK_PRIMARY} !important; }}
-    }}
+    /* ── Light theme only ──────────────────────── */
+    .email-wrapper {{ background-color: {_LIGHT_BG}; }}
+    .email-card {{ background-color: {_LIGHT_PAPER}; color: {_DARK_TEXT}; }}
+    .email-header-inner {{ background-color: {_SECONDARY_BG}; }}
+    .email-footer {{ background-color: {_SECONDARY_BG}; color: {_LIGHT_TEXT}; }}
+    .email-subject {{ color: {_DARK_TEXT}; }}
+    .email-cta {{ background-color: {_DARK_TEXT}; color: #ffffff; }}
+    a {{ color: {_DARK_TEXT}; text-decoration: underline; }}
   </style>
 </head>
 <body class="email-wrapper">
@@ -79,23 +76,21 @@ def goldlabel_email(
 
           <!-- Header -->
           <tr>
-            <td class="email-header" align="left"
+            <td class="email-header" align="center"
                 style="padding:24px 40px 0 40px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-header-inner"
-                     style="background-color:{_LIGHT_PRIMARY}; border-radius:6px;">
+                     style="background-color:{_SECONDARY_BG}; border-radius:6px; max-width:300px; margin:0 auto;">
                 <tr>
-                  <td align="left" valign="middle" style="padding:20px 16px 20px 20px; width:1%; white-space:nowrap;">
+                  <td align="center" valign="middle" style="padding:20px;">
                     <a href="{_BASE_URL}" style="text-decoration:none; display:inline-block;">
                       <img src="{_LOGO_URL}"
                            width="48" height="48"
-                           alt="Goldlabel"
-                           style="width:48px; height:48px; border-radius:6px;" />
+                           alt="Virus°"
+                           style="width:48px; height:48px; border-radius:6px; display:block; margin:0 auto 10px auto;" />
                     </a>
-                  </td>
-                  <td align="left" valign="middle" style="padding:20px 20px 20px 0;">
                     <h1 class="email-subject"
                         style="margin:0; font-size:22px; font-weight:700;
-                               color:#ffffff; line-height:1.3;">
+                               color:{_DARK_TEXT}; line-height:1.3;">
                       {subject}
                     </h1>
                   </td>
@@ -108,21 +103,21 @@ def goldlabel_email(
           <tr>
             <td align="left"
                 style="padding: 30px 40px 24px 40px;
-                       font-size:15px; line-height:1.7; color:{_LIGHT_TEXT};">
+                       font-size:15px; line-height:1.7; color:{_DARK_TEXT};">
               {body_html}
             </td>
           </tr>
 
           <!-- CTA -->
           <tr>
-            <td align="left" style="padding: 0 40px 28px 40px;">
+            <td align="center" style="padding: 0 40px 28px 40px;">
               <a class="email-cta"
                  href="{cta_url}"
-                 style="display:block; width:100%; box-sizing:border-box;
-                        background-color:{_DARK_PRIMARY}; color:{_LIGHT_PRIMARY};
+                 style="display:inline-block;
+                        background-color:{_DARK_TEXT}; color:#ffffff;
                         font-size:16px; font-weight:700; text-align:center;
                         text-decoration:none; border-radius:6px;
-                        padding:14px 20px;">
+                        padding:14px 28px;">
                 {cta_label}
               </a>
             </td>
@@ -133,9 +128,10 @@ def goldlabel_email(
           <tr>
             <td class="email-footer" align="center"
                 style="padding: 20px 40px;
-                       font-size:12px; color:#666666;">
+                       font-size:12px; color:{_LIGHT_TEXT};
+                       background-color:{_SECONDARY_BG};">
               <a href="https://github.com/goldlabelapps/python"
-                 style="color:{_LIGHT_PRIMARY}; text-decoration:none;">
+                 style="color:{_DARK_TEXT}; text-decoration:none;">
                  Sent with Python°
               </a>
              
