@@ -15,27 +15,28 @@ app = FastAPI(
     version=__version__,
 )
 
-# CORS middleware for development
+def get_allowed_origins() -> list[str]:
+    configured_origins = os.getenv("ALLOWED_ORIGINS", "")
+    if configured_origins:
+        return [origin.strip() for origin in configured_origins.split(",") if origin.strip()]
+
+    return [
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8000",
+        "https://goldlabel.pro"
+    ]
+
+
+# CORS middleware with an explicit, environment-driven allow-list.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:1999", 
-        "http://localhost:1998", 
-        "http://localhost:1975", 
-        "http://localhost:1980", 
-        "http://localhost:2027",
-        "http://localhost:2020",
-        "http://localhost:2000",
-        "https://goldlabel.pro",
-        "https://nx-admin.goldlabel.pro",
-        "https://free.goldlabel.pro",
-        "https://listingslab.com",
-        "https://ed-tech.co",
-        "https://notheretofuckspiders.art",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
+    allow_origins=get_allowed_origins(),
+    allow_origin_regex=os.getenv("CORS_ALLOW_ORIGIN_REGEX"),
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Accept", "Accept-Language", "Content-Language", "Content-Type", "Authorization", "X-API-Key"],
 )
 
 

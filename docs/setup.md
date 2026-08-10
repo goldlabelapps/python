@@ -30,7 +30,10 @@ BASE_URL=http://localhost:8000
 PYTHON_KEY=your_api_key
 GEMINI_API_KEY=your_gemini_key
 RESEND_API_KEY=your_resend_key
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
 ```
+
+> Important: if the API is called from a browser frontend, the frontend origin must be explicitly listed in `ALLOWED_ORIGINS`. This is a common deployment gotcha. If your app is hosted at a production URL such as `https://your-app.example.com`, add that exact origin to the environment variable before deploying.
 
 ## Running the app
 

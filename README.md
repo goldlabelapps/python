@@ -20,3 +20,5 @@ The app is designed to be a reliable backend layer for internal tools, admin wor
 ## Quick note
 
 If you want to get started, the best place to begin is the [setup guide](docs/setup.md). If you want to understand the system as a whole, start with the [overview](docs/overview.md).
+
+Before deployment, make sure the frontend origin is included in `ALLOWED_ORIGINS`; otherwise browser requests from that domain will be rejected by CORS.

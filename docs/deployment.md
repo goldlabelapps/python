@@ -13,6 +13,9 @@ For deployment, ensure the following are configured:
 - `GEMINI_API_KEY` for prompt generation
 - `RESEND_API_KEY` for email sending
 - `BASE_URL` for environment-aware metadata
+- `ALLOWED_ORIGINS` with the exact frontend origin(s) that will call the API from the browser
+
+> Deployment gotcha: CORS will block browser requests unless the frontend URL is explicitly allowed. Before deploying, add the production frontend URL to `ALLOWED_ORIGINS` (for example, `https://your-app.example.com`). If you use a different subdomain or preview URL, include that exact origin as well.
 
 ## Recommended deployment checklist
 
