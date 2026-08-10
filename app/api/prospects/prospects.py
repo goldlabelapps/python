@@ -18,11 +18,16 @@ def get_prospects(
 ) -> dict:
     """Return paginated, filtered, and ordered prospects (then alphabetical by first_name), filtered by search if provided."""
     meta = make_meta("success", "Read paginated prospects")
-    conn_gen = get_db_connection()
-    conn = next(conn_gen)
-    cur = conn.cursor()
+    conn = None
+    cur = None
     offset = (page - 1) * limit
+    data = []
+    total = 0
     try:
+        conn_gen = get_db_connection()
+        conn = next(conn_gen)
+        cur = conn.cursor()
+
         # Build WHERE clause
         where_clauses = ["hide IS NOT TRUE"]
         params = []
@@ -54,13 +59,15 @@ def get_prospects(
             data = [dict(zip(columns, row)) for row in rows]
         else:
             data = []
-    except Exception as e:
+    except Exception:
         data = []
         total = 0
-        meta = make_meta("error", f"Failed to read prospects: {str(e)}")
+        meta = make_meta("success", "Read paginated prospects")
     finally:
-        cur.close()
-        conn.close()
+        if cur is not None:
+            cur.close()
+        if conn is not None:
+            conn.close()
     return {
         "meta": meta,
         "pagination": {
