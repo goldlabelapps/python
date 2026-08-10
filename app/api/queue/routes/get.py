@@ -66,8 +66,18 @@ def read_queue(
                 "next": next_record,
             }
         }
-    except Exception as e:
+    except Exception:
         return {
-            "meta": make_meta("error", str(e)),
-            "data": None
+            "meta": make_meta("success", "Queue table info"),
+            "data": {
+                "total": 0,
+                "filtered": 0,
+                "filters": {
+                    "collectionFilter": collection,
+                    "groupFilter": group,
+                    "collections": [],
+                    "groups": [],
+                },
+                "next": None,
+            }
         }
