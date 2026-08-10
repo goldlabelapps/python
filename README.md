@@ -2,82 +2,21 @@
 
 ![Python°](app/static/python.png)
 
-> Production ready, open-source FastAPI application with PostgreSQL and blazing-fast full-text search
+This project is a FastAPI-based backend for collecting, organizing, and serving business data. It brings together PostgreSQL storage, API endpoints, and a few practical automation features such as AI prompt handling, email sending, and data integration with services like GitHub, Flickr, and YouTube.
 
-#### Overview
+The app is designed to be a reliable backend layer for internal tools, admin workflows, or front-end applications that need structured data and simple API access.
 
-This project provides a scalable API backend using FastAPI and PostgreSQL, featuring:
+## Table of contents
 
-- Automatic full-text search on all text fields (via tsvector)
-- Endpoints for health checks, product management, prompt handling (via `/prompt`), notify email, and prospect management
-- Efficient ingestion and processing of large CSV files
+- [Project overview](docs/overview.md)
+- [Architecture](docs/architecture.md)
+- [Setup and development](docs/setup.md)
+- [API reference](docs/api.md)
+- [Integrations](docs/integrations.md)
+- [Database](docs/database.md)
+- [Testing](docs/testing.md)
+- [Deployment](docs/deployment.md)
 
-#### Features
+## Quick note
 
-- **Python 3.11+**
-- **FastAPI** — Modern, high-performance REST API
-- **PostgreSQL** — Robust relational database
-- **tsvector + GIN** — Superfast full-text search
-- **Uvicorn** — Lightning-fast ASGI server
-- **Pytest** — Comprehensive testing
-
-#### Install & Use
-
-#### 1. Clone & Setup Environment
-
-```bash
-git clone https://github.com/goldlabelapps/python.git
-cd python
-cp .env.sample .env  # Add your Postgres credentials and settings
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-#### 2. Run the App
-
-```bash
-uvicorn app.main:app --reload
-```
-
-Visit [localhost:8000](http://localhost:8000) or [onrender](https://nx-ai.onrender.com)
-
-#### API Documentation
-
-FastAPI auto-generates interactive docs:
-
-- [Swagger UI](https://nx-ai.onrender.com/docs)
-- [ReDoc](https://nx-ai.onrender.com/redoc)
-
-#### Notable Endpoints
-
-- `GET /health` — Health check
-- `GET /prompt` or `GET /prompts` — Prompt table metadata (`record_count`, `columns`)
-- `POST /prompt` — LLM prompt completion (formerly `/llm`)
-- `GET/POST /notify/email` — Send email via Resend API (see implementation in `app/api/notify/email.py`)
-- `GET /prospects` — Paginated prospects
-- `POST /prospects/process` — Bulk CSV ingestion
-
-#### Full-Text Search (tsvector)
-
-The `prospects` table includes a `search_vector` column (type: tsvector) computed from all text fields on insert/update. A GIN index enables fast, scalable full-text search:
-
-```sql
-SELECT * FROM prospects WHERE search_vector @@ plainto_tsquery('english', 'search terms');
-```
-
-**How it works:**
-- On every insert/update, `search_vector` is computed using PostgreSQL's `to_tsvector('english', ...)`.
-- The GIN index (`idx_prospects_search_vector`) enables efficient search across large datasets.
-
-#### Processing Large CSV Files
-
-The `/prospects/process` endpoint supports robust ingestion of large CSVs (e.g., 1300+ rows, 300KB+), following the same normalization and insertion pattern as `/prospects/seed` but optimized for scale.
-
-#### Contributing
-
-Contributions welcome. Please open issues or submit pull requests.
-
-#### License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+If you want to get started, the best place to begin is the [setup guide](docs/setup.md). If you want to understand the system as a whole, start with the [overview](docs/overview.md).
